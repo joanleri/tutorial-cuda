@@ -7,7 +7,7 @@ __global__
 void cuadrado(float* d_out, float* d_in) {
 	int idx = threadIdx.x;
 	float f = d_in[idx];
-	dout[idx] = f*f;
+	d_out[idx] = f*f;
 }
 
 int main(int argc, char **argv){
@@ -30,7 +30,7 @@ int main(int argc, char **argv){
 	cudaMemcpy(d_in, h_orig, ARR_BYTES, cudaMemcpyHostToDevice);
 	
 	//Lanza el kernel
-	cuadrado<<<1,ARR_SZ>>>(d_out,d_in);
+	cuadrado<<<1,ARR_SIZE>>>(d_out,d_in);
 	
 	//Toma el resultado
 	cudaMemcpy(h_res, d_out, ARR_BYTES, cudaMemcpyDeviceToHost);
