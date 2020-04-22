@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 const int ARR_SIZE = 64;
-const int ARR_BYTES = ARR_SIZE*sizeof(float);
 
 // Función para calcular el cuadrado de los elementos
 void cuadrado(float *d_out, float *d_in) {
