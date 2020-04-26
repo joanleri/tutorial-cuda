@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
     dim3 dimGrid(NUM_BLOCKS, 1, 1);
     dim3 dimBlock(THREADS_PER_BLOCK / NUM_BLOCKS, 1, 1);
     //vect_add<<<dimGrid, dimBlock>>>(d_a, d_b, d_c);
-    vect_add_multiblock<<dimGrid, dimBlock>>(d_a, d_b, d_c);
+    vect_add_multiblock<<<dimGrid, dimBlock>>>(d_a, d_b, d_c);
 
     /* Esperar a que todos los threads acaben y checar por errores */
     cudaThreadSynchronize();
