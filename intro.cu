@@ -28,7 +28,7 @@ __global__ void vect_add(int *d_a, int *d_b, int *d_c)
 __global__ void vect_add_multiblock(int *d_a)
 {
     /* Part 2C: Implementación del kernel pero esta vez permitiendo múltiples bloques de hilos. */
-    int idx = threadIdx.x + (blockIdx.x * blockDim.x)
+    int idx = threadIdx.x + (blockIdx.x * blockDim.x);
     d_c[idx] = d_a[idx] + d_b[idx];
 }
 
