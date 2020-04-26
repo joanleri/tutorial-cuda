@@ -28,6 +28,8 @@ __global__ void vect_add(int *d_a, int *d_b, int *d_c)
 __global__ void vect_add_multiblock(int *d_a)
 {
     /* Part 2C: Implementación del kernel pero esta vez permitiendo múltiples bloques de hilos. */
+    int idx = threadIdx.x + (blockIdx.x * blockDim.x)
+    d_c[idx] = d_a[idx] + d_b[idx];
 }
 
 /* Numero de elementos en el vector */
@@ -37,7 +39,7 @@ __global__ void vect_add_multiblock(int *d_a)
  * Número de bloques e hilos
  * Su producto siempre debe ser el tamaño del vector (arreglo).
  */
-#define NUM_BLOCKS  1
+#define NUM_BLOCKS  4
 #define THREADS_PER_BLOCK 256
 
 /* Main routine */
@@ -78,7 +80,8 @@ int main(int argc, char *argv[])
     /* Parte 2A: Configurar y llamar los kernels */
     dim3 dimGrid(NUM_BLOCKS, 1, 1);
     dim3 dimBlock(THREADS_PER_BLOCK / NUM_BLOCKS, 1, 1);
-    vect_add<<<dimGrid, dimBlock>>>(d_a, d_b, d_c);
+    //vect_add<<<dimGrid, dimBlock>>>(d_a, d_b, d_c);
+    vect_add_multiblock<<dimGrid, dimBlock>>(d_a, d_b, d_c);
 
     /* Esperar a que todos los threads acaben y checar por errores */
     cudaThreadSynchronize();
