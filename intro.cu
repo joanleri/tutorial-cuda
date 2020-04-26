@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
     /* run the kernel on the GPU */
     /* Parte 2A: Configurar y llamar los kernels */
     dim3 dimGrid(NUM_BLOCKS, 1, 1);
-    dim3 dimBlock(THREADS_PER_BLOCK, 1, 1);
+    dim3 dimBlock(THREADS_PER_BLOCK / NUM_BLOCKS, 1, 1);
     vect_add<<<dimGrid, dimBlock>>>(d_a, d_b, d_c);
 
     /* Esperar a que todos los threads acaben y checar por errores */
