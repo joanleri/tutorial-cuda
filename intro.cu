@@ -65,8 +65,8 @@ int main(int argc, char *argv[])
 
     /* inicialización */
     for (i = 0; i < ARRAY_SIZE; i++) {
-        a[i] = 10;
-        b[i] = 20;
+        a[i] = i;
+        b[i] = ARRAY_SIZE - i;
         c[i] = 0;
     }
 
