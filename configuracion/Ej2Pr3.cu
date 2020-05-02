@@ -66,8 +66,8 @@ int main(void)
 	cudaEventCreate(&stop);
     
     // Set number of threads and blocks
-	int n_threads_per_block = 128;//1<<9;  // 512 threads per block
-	int n_blocks = 256;//1<<10;  // 1024 blocks
+	int n_threads_per_block = 128;				// 128
+	int n_blocks = 8;							// 256
 
 	// Do calculation on device
 
