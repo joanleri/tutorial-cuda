@@ -20,7 +20,7 @@ __global__ void matrix_multiplication(float *d_A, float *d_B, float *d_C, int N)
     int col = blockIdx.x * blockDim.x + threadIdx.x;
 
     // producto punto entre renglón de A y columna de B
-    d_C[row * N + col] = 0;
+    d_C[row * N + col] = (float)0;
     for (int i = 0; i < N; i++) {
         d_C[row * N + col] += d_A[row * N + i] * d_B[i * N + col];
     }
@@ -88,7 +88,7 @@ int main(int argc, char *argv[]) {
     checkCUDAError("memcpy");
 
     // verificando resultado
-    printf("Verifying result in CPU...");
+    printf("Verifying result in CPU...\n");
     verify_result(h_A, h_B, h_C, N);
     printf("Success!");
 
