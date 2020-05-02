@@ -82,6 +82,7 @@ int main(int argc, char *argv[]) {
     checkCUDAError("memcpy");
 
     // verificando resultado
+    printf("Verifying result in CPU...");
     verify_result(h_A, h_B, h_C, N);
     printf("Success!");
 
