@@ -20,7 +20,7 @@ __global__ void square_array(float *a, int N)
 	int n_elem_per_thread = N / (gridDim.x * blockDim.x);
 	
 	// Printing the number of elements per thread using thread 0
-	if (threadIdx.x == 0) {
+	if (blockIdx.x == 0 && threadIdx.x == 0) {
 		printf("Elements per thread: %d\n", n_elem_per_thread);
 	}
 
@@ -42,7 +42,7 @@ __global__ void square_array(float *a, int N)
 int main(void)
 {
 	float *a_h, *a_d;  // Pointer to host & device arrays
-	const int N = 1<<10;  // Make a big array with 2**10 elements
+	const int N = 1<<20;  // Make a big array with 2**10 elements
 	size_t size = N * sizeof(float);
     
     /* Auxiliares para medir tiempos */
@@ -67,7 +67,7 @@ int main(void)
     
     // Set number of threads and blocks
 	int n_threads_per_block = 128;				// 128
-	int n_blocks = 8;							// 256
+	int n_blocks = 256;							// 256
 
 	// Do calculation on device
 
