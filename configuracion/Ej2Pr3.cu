@@ -7,8 +7,8 @@
 #include <stdio.h>
 //PP#include <cuda.h>
 
-#define STRIDE        8
-#define OFFSET        0
+#define STRIDE       32
+#define OFFSET        1
 #define GROUP_SIZE  512
 
 /* Utilidad para checar errores de CUDA */
