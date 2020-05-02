@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
     float *h_A, *h_B, *h_C;                     // matrices en CPU
     float *d_A, *d_B, *d_C;                     // matrices en GPU
 
-    int N = 1 << 10;                            // 1024 filas y renglones
+    int N = 1 << 5;                             // 1024 filas y renglones
     int MTX_SIZE = N * N;                       // matriz de tamaño 1024x1024
     size_t size = MTX_SIZE * sizeof(float);     // tamaño de matriz en bytes
 
@@ -86,6 +86,14 @@ int main(int argc, char *argv[]) {
     // copiando resultado de regreso al CPU
     cudaMemcpy(h_C, d_C, size, cudaMemcpyDeviceToHost);
     checkCUDAError("memcpy");
+
+    // imprimiendo resultados
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            printf("%d, ", h_C[i * N + j]);
+        }
+        printf("\n");
+    }
 
     // verificando resultado
     printf("Verifying result in CPU...\n");
