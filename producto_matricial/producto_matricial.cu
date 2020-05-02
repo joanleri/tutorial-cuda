@@ -45,7 +45,12 @@ int main(int argc, char *argv[]) {
     float *h_A, *h_B, *h_C;                     // matrices en CPU
     float *d_A, *d_B, *d_C;                     // matrices en GPU
 
-    int N = 1 << (int)argv[1];                  // 1024 filas y renglones
+    if (argc < 2) {
+        printf("usage: mul <matrix-dimension-power-2>\n");
+        exit(-1);
+    }
+
+    int N = 1 << atoi(argv[1]);                 // 1024 filas y renglones
     int MTX_SIZE = N * N;                       // matriz de tamaño 1024x1024
     size_t size = MTX_SIZE * sizeof(float);     // tamaño de matriz en bytes
 
