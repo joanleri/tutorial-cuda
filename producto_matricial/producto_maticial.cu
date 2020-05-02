@@ -1,0 +1,95 @@
+/* 
+* 
+* Multiplicación de Matrices en CUDA
+* 
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+
+// Kernel de multiplicación de matrices
+__global__ void matrix_multiplication(float *d_A, float *d_B, float *d_C, int N) {
+    // calculando renglón y columna
+    int row = blockIdx.y * blockDim.y + threadIdx.y;
+    int col = blockIdx.x * blockDim.x + threadIdx.x;
+
+    // producto punto entre renglón de A y columna de B
+    d_C[row * N + col] = 0;
+    for (int i = 0; i < N, i++) {
+        d_C[row * N + col] += d_A[row * N + i] * d_B[i * N + col];
+    }
+}
+
+// Verificando resultado en el CPU
+void verify_result(float *A, float *B, float *C, int N) {
+    for (unsigned int i = 0; i < N; i++) {
+        for (unsigned int j = 0; j < N; j++) {
+            float sum = 0;
+            for (unsigned int k = 0; k < N; k++) {
+                sum += A[i * N + k] * B[k * N + j];
+            }
+            // check against GPU result
+            assert(sum == C[i * N + j])
+        }
+    }
+}
+
+// Main routine
+int main(int argc, char *argv[]) {
+    float *h_A, *h_B, *h_C;                 // matrices en CPU
+    float *d_A, *d_B, *d_C;                 // matrices en GPU
+
+    int N = 1 << 10;                        // 1024 filas y renglones
+    int MTX_SIZE = N * N;                   // matriz de tamaño 1024x1024
+    size_t size = MTX_SIZE * sizeof(int);   // tamaño de matriz en bytes
+
+    // Reservar memoria en CPU
+    h_A = (float *) malloc(size);
+    h_B = (float *) malloc(size);
+    h_C = (float *) malloc(size);
+
+    // Reservar memoria en GPU
+    cudaMalloc((void **) &d_A, sz);
+    cudaMalloc((void **) &d_B, sz);
+    cudaMalloc((void **) &d_C, sz);
+
+    // inicializando matrices
+    for (int i = 0; i < MTX_SIZE; i++) {
+        h_A[i] = (float)i;
+        h_B[i] = (float)i;
+        h_C[i] = (float)0;
+    }
+
+    // copiando de CPU a GPU
+    cudaMemcpy(d_A, h_A, size, cudaMemcpyHostToDevice);
+    cudaMemcpy(d_B, h_B, size, cudaMemcpyHostToDevice);
+
+    // corriendo kernel en el GPU
+    int n_threads = 32;
+    int n_blocks = N / n_threads_per_block;
+    dim3 dimBlock(n_threads, n_threads);
+    dim3 dimGrid(n_blocks, n_blocks);
+
+    matrix_multiplication<<<dimGrid, dimBlock>>>(d_A, d_B, d_C, N);
+    
+
+    // esperando a que acaben los hilos
+    cudaThreadSynchronize();
+    checkCUDAError("kernel invocation");
+
+    // copiando resultado de regreso al CPU
+    cudaMemcpy(h_C, d_C, size, cudaMemcpyDeviceToHost);
+    checkCUDAError("memcpy");
+
+    // verificando resultado
+    verify_result(h_A, h_B, h_C, N);
+    printf("Success!");
+
+    // Liberar memoria
+    free(h_A);
+    free(h_B);
+    free(h_C);
+    cudaFree(d_A);
+    cudaFree(d_B);
+    cudaFree(d_C);
+}
