@@ -7,7 +7,7 @@
 #include <stdio.h>
 //PP#include <cuda.h>
 
-#define STRIDE       16
+#define STRIDE        8
 #define OFFSET        0
 #define GROUP_SIZE  512
 
