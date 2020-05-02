@@ -6,6 +6,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+//PP#include <cuda.h>
+
+
+/* Utilidad para checar errores de CUDA */
+void checkCUDAError(const char*);
 
 // Kernel de multiplicación de matrices
 __global__ void matrix_multiplication(float *d_A, float *d_B, float *d_C, int N) {
@@ -15,7 +20,7 @@ __global__ void matrix_multiplication(float *d_A, float *d_B, float *d_C, int N)
 
     // producto punto entre renglón de A y columna de B
     d_C[row * N + col] = 0;
-    for (int i = 0; i < N, i++) {
+    for (int i = 0; i < N; i++) {
         d_C[row * N + col] += d_A[row * N + i] * d_B[i * N + col];
     }
 }
@@ -29,19 +34,19 @@ void verify_result(float *A, float *B, float *C, int N) {
                 sum += A[i * N + k] * B[k * N + j];
             }
             // check against GPU result
-            assert(sum == C[i * N + j])
+            assert(sum == C[i * N + j]);
         }
     }
 }
 
 // Main routine
 int main(int argc, char *argv[]) {
-    float *h_A, *h_B, *h_C;                 // matrices en CPU
-    float *d_A, *d_B, *d_C;                 // matrices en GPU
+    float *h_A, *h_B, *h_C;                     // matrices en CPU
+    float *d_A, *d_B, *d_C;                     // matrices en GPU
 
-    int N = 1 << 10;                        // 1024 filas y renglones
-    int MTX_SIZE = N * N;                   // matriz de tamaño 1024x1024
-    size_t size = MTX_SIZE * sizeof(int);   // tamaño de matriz en bytes
+    int N = 1 << 10;                            // 1024 filas y renglones
+    int MTX_SIZE = N * N;                       // matriz de tamaño 1024x1024
+    size_t size = MTX_SIZE * sizeof(float);     // tamaño de matriz en bytes
 
     // Reservar memoria en CPU
     h_A = (float *) malloc(size);
@@ -49,9 +54,9 @@ int main(int argc, char *argv[]) {
     h_C = (float *) malloc(size);
 
     // Reservar memoria en GPU
-    cudaMalloc((void **) &d_A, sz);
-    cudaMalloc((void **) &d_B, sz);
-    cudaMalloc((void **) &d_C, sz);
+    cudaMalloc((void **) &d_A, size);
+    cudaMalloc((void **) &d_B, size);
+    cudaMalloc((void **) &d_C, size);
 
     // inicializando matrices
     for (int i = 0; i < MTX_SIZE; i++) {
@@ -66,7 +71,7 @@ int main(int argc, char *argv[]) {
 
     // corriendo kernel en el GPU
     int n_threads = 32;
-    int n_blocks = N / n_threads_per_block;
+    int n_blocks = N / n_threads;
     dim3 dimBlock(n_threads, n_threads);
     dim3 dimGrid(n_blocks, n_blocks);
 
@@ -93,4 +98,15 @@ int main(int argc, char *argv[]) {
     cudaFree(d_A);
     cudaFree(d_B);
     cudaFree(d_C);
+}
+
+// Utility function to check for and report CUDA errors
+void checkCUDAError(const char *msg)
+{
+    cudaError_t err = cudaGetLastError();
+    if( cudaSuccess != err)
+    {
+        fprintf(stderr, "Cuda error: %s: %s.\n", msg, cudaGetErrorString( err) );
+        exit(EXIT_FAILURE);
+    }
 }
