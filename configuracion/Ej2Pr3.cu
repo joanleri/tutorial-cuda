@@ -20,9 +20,9 @@ __global__ void square_array(float *a, int N)
 	int n_elem_per_thread = N / (gridDim.x * blockDim.x);
 	
 	// Printing the number of elements per thread using thread 0
-	if (blockIdx.x == 0 && threadIdx.x == 0) {
-		printf("Elements per thread: %d\n", n_elem_per_thread);
-	}
+	// if (blockIdx.x == 0 && threadIdx.x == 0) {
+	// 	printf("Elements per thread: %d\n", n_elem_per_thread);
+	// }
 
 	int block_start_idx = n_elem_per_thread * blockIdx.x * blockDim.x;
 	int thread_start_idx = block_start_idx
