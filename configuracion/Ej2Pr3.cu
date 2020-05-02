@@ -9,7 +9,7 @@
 
 #define STRIDE       32
 #define OFFSET        0
-#define GROUP_SIZE   16
+#define GROUP_SIZE    8
 
 /* Utilidad para checar errores de CUDA */
 void checkCUDAError(const char*);
