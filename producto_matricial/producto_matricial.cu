@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <cassert>
+#include <time.h>
 //PP#include <cuda.h>
 
 
@@ -75,18 +76,26 @@ int main(int argc, char *argv[]) {
     cudaMemcpy(d_A, h_A, size, cudaMemcpyHostToDevice);
     cudaMemcpy(d_B, h_B, size, cudaMemcpyHostToDevice);
 
+    // verificando tiempo de ejecución
+    time_t t1, t2;
+
     // corriendo kernel en el GPU
     int n_threads = 32;
     int n_blocks = N / n_threads;
     dim3 dimBlock(n_threads, n_threads);
     dim3 dimGrid(n_blocks, n_blocks);
 
+    t1 = time(NULL);
     matrix_multiplication<<<dimGrid, dimBlock>>>(d_A, d_B, d_C, N);
     
 
     // esperando a que acaben los hilos
     cudaThreadSynchronize();
     checkCUDAError("kernel invocation");
+
+    // timing execution
+    t2 = time(NULL);
+    printf("Execution time: %f sec\n", difftime(t2, t1));
 
     // copiando resultado de regreso al CPU
     cudaMemcpy(h_C, d_C, size, cudaMemcpyDeviceToHost);
