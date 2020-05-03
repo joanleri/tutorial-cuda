@@ -5,7 +5,6 @@
 * Created on Día 9999 de la cuarentena COVID19
 */
 
-#include <complex.h>
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
