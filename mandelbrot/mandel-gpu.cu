@@ -68,7 +68,7 @@ __global__ void generate_mandelbrot(complex *in, int *out, complex z, int i_size
         }
         float area = 16.0 * (double)(num_inside) / (double)(i_size * i_size);
         float error = area / (double)i_size;
-        printf("The number of points outside is: %d\n", num_outside);
+        printf("The number of points outside is: %d\n", i_size * i_size - num_inside);
         printf("Area of Mandlebrot set is: %12.8f +/- %12.8f\n", area, error);
     }
 }
@@ -93,7 +93,7 @@ int main(int argc, char** argv) {
     double max = 2.0;
     double min = -2.0;
     int array_size = r_points * i_points;
-    int num_outside = 0;
+    // int num_outside = 0;
     double dR = (max - min) / r_points;
     double dI = (max - min) / i_points;
     complex z;
@@ -148,7 +148,7 @@ int main(int argc, char** argv) {
 
     // timing execution
     t2 = time(NULL);
-    printf("Execution time: %f sec\n", difftime(t2, t1) + difftime(t4, t3));
+    printf("Execution time: %f sec\n", difftime(t2, t1));
 
     // copying back to CPU
     cudaMemcpy(h_output, d_output, size_output, cudaMemcpyDeviceToHost);
