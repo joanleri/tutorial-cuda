@@ -134,7 +134,7 @@ int main(int argc, char** argv) {
 
     // executing kernels
     t1 = time(NULL);
-    int n_threads = 32;
+    int n_threads = 16;
     int n_blocks_r = r_points / n_threads;
     int n_blocks_i = i_points / n_threads;
     dim3 dimBlock(n_threads, n_threads);
