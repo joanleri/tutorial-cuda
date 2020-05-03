@@ -50,8 +50,8 @@ int main(int argc, char *argv[]) {
         exit(-1);
     }
 
-    int N = 1 << atoi(argv[1]);                 // 1024 filas y renglones
-    int MTX_SIZE = N * N;                       // matriz de tamaño 1024x1024
+    int N = 1 << atoi(argv[1]);                 // filas y renglones
+    int MTX_SIZE = N * N;                       // matriz de tamaño
     size_t size = MTX_SIZE * sizeof(float);     // tamaño de matriz en bytes
 
     // Reservar memoria en CPU
