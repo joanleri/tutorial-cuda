@@ -54,7 +54,7 @@ double abs_complex(Pcomplex num) {
 void checkCUDAError(const char*);
 
 // Mandelbrot generation kernel
-__global__ void generate_mandelbrot(double complex *in, int *out, int i_size, int max_iter) {
+__global__ void generate_mandelbrot(complex *in, int *out, int i_size, int max_iter) {
     
     // calculating indices
     int id_r = blockIdx.x * blockDim.x + threadIdx.x;
