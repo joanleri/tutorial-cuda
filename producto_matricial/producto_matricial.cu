@@ -110,8 +110,8 @@ int main(int argc, char *argv[]) {
     // }
 
     // verificando resultado
-    printf("Verifying result in CPU...\n");
-    verify_result(h_A, h_B, h_C, N);
+    // printf("Verifying result in CPU...\n");
+    // verify_result(h_A, h_B, h_C, N);
     printf("Success!\n");
 
     // Liberar memoria
