@@ -123,7 +123,7 @@ int main(int argc, char** argv) {
 
     // number of points outside, area and error
     printf("The number of points outside is: %d\n", num_outside);
-    float area = 4.0 * max * (double)(array_size - num_outside) / (double)(array_size);
+    float area = (2.0 * max) * (2.0 * max) * (double)(array_size - num_outside) / (double)(array_size);
     float error = area / (double)r_points;
     printf("Area of Mandlebrot set is: %12.8f +/- %12.8f\n", area, error);
 
