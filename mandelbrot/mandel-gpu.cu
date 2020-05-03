@@ -41,8 +41,8 @@ __global__ void generate_mandelbrot(complex *in, int *out, complex z, int i_size
     // initial values
     complex c = in[id_i * i_size + id_r];
     int result = 1;
-    float temp_real;
-    float abs_value;
+    double temp_real;
+    double abs_value;
 
     // determining if c is part of mandelbrot set
     for (int i = 0; i < max_iter; i++) {
