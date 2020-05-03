@@ -16,6 +16,42 @@
 # define POINTS_PER_DIM 1024
 # define MAX_ITER 2000
 
+// Defining complex type
+typedef struct complex_ {
+    double real;
+    double imag;
+} complex, *Pcomplex;
+
+// Getting new complex number
+complex new_complex(double real, double imag) {
+    Pcomplex complex_ptr = (Pcomplex)malloc(sizeof(complex));
+    complex_ptr->real = real;
+    complex_ptr->imag = imag;
+    return *complex_ptr;
+}
+
+// Squaring complex number
+// Does it with pointers so it does not need to reassign value
+void square_complex(Pcomplex num) {
+    float temp_real = num->real;
+    num->real = (num->real * num->real) - (num->imag * num->imag);
+    num->imag = 2 * temp_real * num->imag;
+}
+
+// Adding to complex number
+// Does it with pointers so it does not need to reassign value
+// num1 is modify automatically
+void add_complex(Pcomplex num1, Pcomplex num2) {
+    num1->real = num1->real + num2->real;
+    num1->imag = num1->imag + num2->imag;
+}
+
+// Abs of complex number
+double abs_complex(Pcomplex num) {
+    return sqrt((num->real * num->real) + (num->imag * num->imag));
+}
+
+
 /* Utilidad para checar errores de CUDA */
 void checkCUDAError(const char*);
 
@@ -27,14 +63,15 @@ __global__ void generate_mandelbrot(double complex *in, int *out, int i_size, in
     int id_i = blockIdx.y * blockDim.y + threadIdx.y;
 
     // initial values
-    double complex z = 0.0 + 0.0 * I;
-    double complex c = in[id_i * i_size + id_r];
+    complex z = new_complex(0.0, 0.0);
+    complex c = in[id_i * i_size + id_r];
     int result = 1;
 
     // determining if c is part of mandelbrot set
     for (int i = 0; i < max_iter; i++) {
-        z = z * z + c;
-        if (cabs(z) > 2.0) {
+        quare_complex(&z);
+        add_complex(&z, &c);
+        if (abs_complex(&z_temp) > 2.0) {
             result = 0;
             break;
         }
@@ -52,9 +89,6 @@ int main(int argc, char** argv) {
     } else if (argc < 3) {
         r_points = 1 << atoi(argv[1]);
         i_points = 1 << atoi(argv[1]);
-    } else if (argc < 4) {
-        r_points = 1 << atoi(argv[1]);
-        i_points = 1 << atoi(argv[2]);
     } else {
         printf("Usage: mandel-gpu <log(xdim)> <log(ydim)>\n");
         exit(-1);
@@ -66,22 +100,21 @@ int main(int argc, char** argv) {
     double min = -2.0;
     int array_size = r_points * i_points;
     // int num_outside = 0;
-    // int result;
     double dR = (max - min) / r_points;
     double dI = (max - min) / i_points;
 
     // calculating sizes
-    size_t size_input = array_size * sizeof(double complex);
+    size_t size_input = array_size * sizeof(complex);
     size_t size_output = array_size * sizeof(int);
 
     // pointers
-    double complex *h_input;           // CPU
-    double complex *d_input;           // CPU
-    int *h_output;                     // GPU
-    int *d_output;                     // GPU
+    complex *h_input;                   // CPU
+    complex *d_input;                   // CPU
+    int *h_output;                      // GPU
+    int *d_output;                      // GPU
 
     // allocating space in CPU
-    h_input = (double complex *) malloc(size_input);
+    h_input = (complex *) malloc(size_input);
     h_output = (int *) malloc(size_output);
 
     // allocating space in GPU
@@ -95,7 +128,7 @@ int main(int argc, char** argv) {
         for (int j = 0; j < r_points; j++) {
             double real_part = min + dR * j;
             double imag_part = max - dI * i;
-            h_input[i_points * i + j] = real_part + imag_part * I;
+            h_input[i_points * i + j] = new_complex(real_part, imag_part);
         }
     }
 
