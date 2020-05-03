@@ -6,6 +6,7 @@
 */
 
 #include <complex.h>
+#include <thrust/complex.h>
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -34,7 +35,7 @@ __global__ void generate_mandelbrot(double complex *in, int *out, int i_size, in
     // determining if c is part of mandelbrot set
     for (int i = 0; i < max_iter; i++) {
         z = z * z + c;
-        if (cimag(z) * cimag(z) + creal(z) * creal(z) < 4.0) {
+        if (thrust::cabs(z) > 2.0) {
             result = 0;
             break;
         }
