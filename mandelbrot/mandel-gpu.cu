@@ -61,7 +61,7 @@ __global__ void generate_mandelbrot(complex *in, int *out, complex z, int i_size
 
     __syncthreads();
     // calculating number of elements outside of mandelbrot set
-    if (blockIdx.x = 0 && blockIdx.y == 0 && threadIdx.x = 0 && threadIdx.y == 0) {
+    if (blockIdx.x == 0 && blockIdx.y == 0 && threadIdx.x == 0 && threadIdx.y == 0) {
         int num_outside = 0;
         for (int i = 0; i < i_size * i_size; i++) {
             num_outside += out[i];
