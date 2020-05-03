@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <time.h>
 //PP#include <cuda.h>
+//PP#include <cuComplex.h>
 
 # define POINTS_PER_DIM 1024
 # define MAX_ITER 2000
@@ -33,7 +34,7 @@ __global__ void generate_mandelbrot(double complex *in, int *out, int i_size, in
     // determining if c is part of mandelbrot set
     for (int i = 0; i < max_iter; i++) {
         z = z * z + c;
-        if (cabs(z) > 2.0) {
+        if (cimag(z) * cimag(z) + creal(z) * creal(z) < 4.0) {
             result = 0;
             break;
         }
