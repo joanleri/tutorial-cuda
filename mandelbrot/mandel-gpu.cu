@@ -58,6 +58,19 @@ __global__ void generate_mandelbrot(complex *in, int *out, complex z, int i_size
         }
     }
     out[id_i * i_size + id_r] = result;
+
+    __syncthreads();
+    // calculating number of elements outside of mandelbrot set
+    if (blockIdx.x == 0 && blockIdx.y == 0 && threadIdx.x == 0 && threadIdx.y == 0) {
+        int num_inside = 0;
+        for (int i = 0; i < i_size * i_size; i++) {
+            num_inside += out[i];
+        }
+        float area = 16.0 * (double)(num_inside) / (double)(i_size * i_size);
+        float error = area / (double)i_size;
+        printf("The number of points outside is: %d\n", num_outside);
+        printf("Area of Mandlebrot set is: %12.8f +/- %12.8f\n", area, error);
+    }
 }
 
 int main(int argc, char** argv) {
@@ -76,7 +89,7 @@ int main(int argc, char** argv) {
     }
 
     // initialization
-    time_t t1, t2, t3, t4;
+    time_t t1, t2;
     double max = 2.0;
     double min = -2.0;
     int array_size = r_points * i_points;
@@ -135,25 +148,11 @@ int main(int argc, char** argv) {
 
     // timing execution
     t2 = time(NULL);
+    printf("Execution time: %f sec\n", difftime(t2, t1) + difftime(t4, t3));
 
     // copying back to CPU
     cudaMemcpy(h_output, d_output, size_output, cudaMemcpyDeviceToHost);
     checkCUDAError("memcpy");
-
-    // adding all values outside mandelbrot set
-    t3 = time(NULL);
-    for (int i = 0; i < array_size; i++) {
-        num_outside += h_output[i];
-    }
-    t4 = time(NULL);
-
-    printf("Execution time: %f sec\n", difftime(t2, t1) + difftime(t4, t3));
-
-    // number of points outside, area and error
-    printf("The number of points outside is: %d\n", num_outside);
-    float area = (2.0 * max) * (2.0 * max) * (double)(array_size - num_outside) / (double)(array_size);
-    float error = area / (double)r_points;
-    printf("Area of Mandlebrot set is: %12.8f +/- %12.8f\n", area, error);
 
     // generating pmg image
     printf("Generating image...\n");
