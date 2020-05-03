@@ -59,11 +59,8 @@ int main(int argc, char** argv) {
     } else if (argc < 3) {
         r_points = 1 << atoi(argv[1]);
         i_points = 1 << atoi(argv[1]);
-    } else if (argc < 4) {
-        r_points = 1 << atoi(argv[1]);
-        i_points = 1 << atoi(argv[2]);
     } else {
-        printf("Usage: mandel <log(xdim)> <log(ydim)>\n");
+        printf("Usage: mandel <log(dim)>\n");
         exit(-1);
     }
 
@@ -124,8 +121,11 @@ int main(int argc, char** argv) {
     t2 = time(NULL);
     printf("Execution time: %f sec\n", difftime(t2, t1));
 
-    // number of points outside
+    // number of points outside, area and error
     printf("The number of points outside is: %d\n", num_outside);
+    float area = 4.0 * max * (double)(array_size - num_outside) / (double)(array_size);
+    float error = area / (double)r_points;
+    printf("Area of Mandlebrot set is: %12.8f +/- %12.8f\n", area, error);
 
     // generating pmg image
     printf("Generating image...\n");
