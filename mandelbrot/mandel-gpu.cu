@@ -64,11 +64,10 @@ int main(int argc, char** argv) {
     double max = 2.0;
     double min = -2.0;
     int array_size = r_points * i_points;
-    int num_outside = 0;
-    int result;
+    // int num_outside = 0;
+    // int result;
     double dR = (max - min) / r_points;
     double dI = (max - min) / i_points;
-    double complex c, z_temp;
 
     // calculating sizes
     size_t size_input = array_size * sizeof(double complex);
