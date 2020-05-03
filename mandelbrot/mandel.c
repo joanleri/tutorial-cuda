@@ -87,6 +87,9 @@ int main(int argc, char** argv) {
     t2 = time(NULL);
     printf("Execution time: %f sec\n", difftime(t2, t1));
 
+    // number of points outside
+    printf("The number of points outside is: %d\n", num_outside);
+
     // generating pmg image
     printf("Generating image...\n");
     FILE *fp;
