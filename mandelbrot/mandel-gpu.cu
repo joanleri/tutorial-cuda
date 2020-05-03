@@ -67,9 +67,9 @@ __global__ void generate_mandelbrot(complex *in, int *out, int i_size, int max_i
 
     // determining if c is part of mandelbrot set
     for (int i = 0; i < max_iter; i++) {
-        quare_complex(&z);
+        square_complex(&z);
         add_complex(&z, &c);
-        if (abs_complex(&z_temp) > 2.0) {
+        if (abs_complex(&z) > 2.0) {
             result = 0;
             break;
         }
