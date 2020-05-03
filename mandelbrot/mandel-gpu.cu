@@ -11,7 +11,6 @@
 #include <stdio.h>
 #include <time.h>
 //PP#include <cuda.h>
-//PP#include <cuComplex.h>
 
 # define POINTS_PER_DIM 1024
 # define MAX_ITER 2000
