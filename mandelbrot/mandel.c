@@ -5,7 +5,6 @@
  * Created on Día 9999 de la cuarentena
  */
 
-#include <complex.h>
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -14,6 +13,42 @@
 # define POINTS_PER_DIM 1024
 # define MAX_ITER 2000
 
+// Defining complex type
+typedef struct complex_ {
+    double real;
+    double imag;
+} complex, *Pcomplex;
+
+// Getting new complex number
+complex new_complex(double real, double imag) {
+    Pcomplex complex_ptr = (Pcomplex)malloc(sizeof(complex));
+    complex_ptr->real = real;
+    complex_ptr->imag = imag;
+    return *complex_ptr;
+}
+
+// Squaring complex number
+// Does it with pointers so it does not need to reassign value
+void square_complex(Pcomplex num) {
+    float temp_real = num->real;
+    num->real = (num->real * num->real) - (num->imag * num->imag);
+    num->imag = 2 * temp_real * num->imag;
+}
+
+// Adding to complex number
+// Does it with pointers so it does not need to reassign value
+// num1 is modify automatically
+void add_complex(Pcomplex num1, Pcomplex num2) {
+    num1->real = num1->real + num2->real;
+    num1->imag = num1->imag + num2->imag;
+}
+
+// Abs of complex number
+double abs_complex(Pcomplex num) {
+    return sqrt((num->real * num->real) + (num->imag * num->imag));
+}
+
+// main 
 int main(int argc, char** argv) {
 
     // parsing input
@@ -41,12 +76,12 @@ int main(int argc, char** argv) {
     int result;
     double dR = (max - min) / r_points;
     double dI = (max - min) / i_points;
-    double complex c, z_temp;
+    complex c, z_temp;
 
     // generating arrays
-    size_t size_input = array_size * sizeof(double complex);
+    size_t size_input = array_size * sizeof(complex);
     size_t size_output = array_size * sizeof(int);
-    double complex *h_input = (double complex *) malloc(size_input);
+    complex *h_input = (complex *) malloc(size_input);
     int *h_output = (int *) malloc(size_output);
 
     // generating input
@@ -55,7 +90,7 @@ int main(int argc, char** argv) {
         for (int j = 0; j < r_points; j++) {
             double real_part = min + dR * j;
             double imag_part = max - dI * i;
-            h_input[i_points * i + j] = real_part + imag_part * I;
+            h_input[i_points * i + j] = new_complex(real_part, imag_part);
         }
     }
 
@@ -69,11 +104,13 @@ int main(int argc, char** argv) {
             // number is in mandelbrot series or
             // 0 if it does not.
             c = h_input[i_points * i + j];
-            z_temp = 0.0 + 0.0 * I;
+            z_temp.real = 0.0;
+            z_temp.imag = 0.0;
             result = 1;
             for (int k = 0; k < MAX_ITER; k++) {
-                z_temp = z_temp * z_temp + c;
-                if (cabs(z_temp) > 2.0) {
+                square_complex(&z_temp);
+                add_complex(&z_temp, &c);
+                if (abs_complex(&z_temp) > 2.0) {
                     result = 0;
                     num_outside++;
                     break;
