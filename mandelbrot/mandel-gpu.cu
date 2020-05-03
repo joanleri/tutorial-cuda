@@ -20,6 +20,14 @@ typedef struct complex_ {
     double imag;
 } complex, *Pcomplex;
 
+// Getting new complex number
+complex new_complex(double real, double imag) {
+    Pcomplex complex_ptr = (Pcomplex)malloc(sizeof(complex));
+    complex_ptr->real = real;
+    complex_ptr->imag = imag;
+    return *complex_ptr;
+}
+
 /* Utilidad para checar errores de CUDA */
 void checkCUDAError(const char*);
 
