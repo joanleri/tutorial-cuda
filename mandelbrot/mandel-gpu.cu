@@ -20,56 +20,31 @@ typedef struct complex_ {
     double imag;
 } complex, *Pcomplex;
 
-// Getting new complex number
-complex new_complex(double real, double imag) {
-    Pcomplex complex_ptr = (Pcomplex)malloc(sizeof(complex));
-    complex_ptr->real = real;
-    complex_ptr->imag = imag;
-    return *complex_ptr;
-}
-
-// Squaring complex number
-// Does it with pointers so it does not need to reassign value
-void square_complex(Pcomplex num) {
-    float temp_real = num->real;
-    num->real = (num->real * num->real) - (num->imag * num->imag);
-    num->imag = 2 * temp_real * num->imag;
-}
-
-// Adding to complex number
-// Does it with pointers so it does not need to reassign value
-// num1 is modify automatically
-void add_complex(Pcomplex num1, Pcomplex num2) {
-    num1->real = num1->real + num2->real;
-    num1->imag = num1->imag + num2->imag;
-}
-
-// Abs of complex number
-double abs_complex(Pcomplex num) {
-    return sqrt((num->real * num->real) + (num->imag * num->imag));
-}
-
-
 /* Utilidad para checar errores de CUDA */
 void checkCUDAError(const char*);
 
 // Mandelbrot generation kernel
-__global__ void generate_mandelbrot(complex *in, int *out, int i_size, int max_iter) {
+__global__ void generate_mandelbrot(complex *in, int *out, complex z, int i_size, int max_iter) {
     
     // calculating indices
     int id_r = blockIdx.x * blockDim.x + threadIdx.x;
     int id_i = blockIdx.y * blockDim.y + threadIdx.y;
 
     // initial values
-    complex z = new_complex(0.0, 0.0);
     complex c = in[id_i * i_size + id_r];
     int result = 1;
+    float temp_real;
+    float abs_value;
 
     // determining if c is part of mandelbrot set
     for (int i = 0; i < max_iter; i++) {
-        square_complex(&z);
-        add_complex(&z, &c);
-        if (abs_complex(&z) > 2.0) {
+        // squaring z and adding c
+        temp_real = z.real;
+        z.real = (z.real * z.real) - (z.imag * z.imag) + c.real;
+        z.imag = 2 * temp_real * z.imag + c.imag;
+        // calculating abs value
+        abs_value = sqrt((z.real * z.real) + (z.imag * z.imag));
+        if (abs_value > 2.0) {
             result = 0;
             break;
         }
@@ -100,6 +75,9 @@ int main(int argc, char** argv) {
     // int num_outside = 0;
     double dR = (max - min) / r_points;
     double dI = (max - min) / i_points;
+    complex z;
+    z.real = 0.0;
+    z.imag = 0.0;
 
     // calculating sizes
     size_t size_input = array_size * sizeof(complex);
@@ -141,7 +119,7 @@ int main(int argc, char** argv) {
     dim3 dimBlock(n_threads, n_threads);
     dim3 dimGrid(n_blocks_r, n_blocks_i);
 
-    generate_mandelbrot<<<dimGrid, dimBlock>>>(d_input, d_output, i_points, MAX_ITER);
+    generate_mandelbrot<<<dimGrid, dimBlock>>>(d_input, d_output, z, i_points, MAX_ITER);
     
     // waiting for threads
     cudaThreadSynchronize();
