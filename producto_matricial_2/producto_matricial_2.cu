@@ -10,7 +10,7 @@
 #include <time.h>
 //PP#include <cuda.h>
 
-#define SHMEM_SIZE 32 * 32 * 4;   // guardar en L1 256 float's
+#define SHMEM_SIZE 32 * 32 * 4   // guardar en L1 256 float's
 
 /* Utilidad para checar errores de CUDA */
 void checkCUDAError(const char*);
@@ -123,7 +123,7 @@ int main(int argc, char *argv[]) {
     dim3 dimGrid(n_blocks, n_blocks);
 
     t1 = time(NULL);
-    matrix_multiplication<<<dimGrid, dimBlock, SHMEM_SIZE>>>(d_A, d_B, d_C, N, n_threads);
+    matrix_multiplication<<<dimGrid, dimBlock>>>(d_A, d_B, d_C, N, n_threads);
     
     // esperando a que acaben los hilos
     cudaThreadSynchronize();
