@@ -55,6 +55,7 @@ int main(int argc, char *argv[]) {
 
     if (atoi(argv[1]) < 5) {
         printf("Please provide a dimension higher than 5\n");
+        exit(-1);
     }
 
     int N = 1 << atoi(argv[1]);                 // filas y renglones
