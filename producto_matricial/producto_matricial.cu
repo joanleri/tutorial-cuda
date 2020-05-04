@@ -22,8 +22,10 @@ __global__ void matrix_multiplication(float *d_A, float *d_B, float *d_C, int N)
 
     // producto punto entre renglón de A y columna de B
     d_C[row * N + col] = (float)0;
-    for (int i = 0; i < N; i++) {
-        d_C[row * N + col] += d_A[row * N + i] * d_B[i * N + col];
+    if (row < N && col < N) {
+        for (int i = 0; i < N; i++) {
+            d_C[row * N + col] += d_A[row * N + i] * d_B[i * N + col];
+        }
     }
 }
 
@@ -67,8 +69,8 @@ int main(int argc, char *argv[]) {
 
     // inicializando matrices
     for (int i = 0; i < MTX_SIZE; i++) {
-        h_A[i] = (float)i;
-        h_B[i] = (float)i;
+        h_A[i] = (float)rand() % 100;
+        h_B[i] = (float)rand() % 100;
         h_C[i] = (float)0;
     }
 
@@ -101,17 +103,9 @@ int main(int argc, char *argv[]) {
     cudaMemcpy(h_C, d_C, size, cudaMemcpyDeviceToHost);
     checkCUDAError("memcpy");
 
-    // // imprimiendo resultados
-    // for (int i = 0; i < N; i++) {
-    //     for (int j = 0; j < N; j++) {
-    //         printf("%f, ", h_C[i * N + j]);
-    //     }
-    //     printf("\n");
-    // }
-
     // verificando resultado
-    // printf("Verifying result in CPU...\n");
-    // verify_result(h_A, h_B, h_C, N);
+    printf("Verifying result in CPU...\n");
+    verify_result(h_A, h_B, h_C, N);
     printf("Success!\n");
 
     // Liberar memoria
