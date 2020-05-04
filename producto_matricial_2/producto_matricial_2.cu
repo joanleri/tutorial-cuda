@@ -19,8 +19,10 @@ void checkCUDAError(const char*);
 __global__ void matrix_multiplication(float *d_A, float *d_B, float *d_C, int N, int tile_size) {
 
     // memoria compartida
-    __shared__ float A[SHMEM_SIZE];
-    __shared__ float B[SHMEM_SIZE];
+    __shared__ 
+    float A[SHMEM_SIZE];
+    __shared__ 
+    loat B[SHMEM_SIZE];
 
     // indices de hilos y bloques
     int tx = threadIdx.x;
@@ -55,7 +57,7 @@ __global__ void matrix_multiplication(float *d_A, float *d_B, float *d_C, int N,
         __syncthreads();
     }
 
-    d_C[row * n + col] = temp;
+    d_C[row * N + col] = temp;
 }
 
 // Verificando resultado en el CPU
