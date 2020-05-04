@@ -32,7 +32,7 @@ complex new_complex(double real, double imag) {
 void checkCUDAError(const char*);
 
 // Mandelbrot generation kernel
-__global__ void generate_mandelbrot(complex *in, int *out, complex z, int i_size, int max_iter) {
+__global__ void generate_mandelbrot(complex *in, int *out, int *count, complex z, int i_size, int max_iter) {
     
     // calculating indices
     int id_r = blockIdx.x * blockDim.x + threadIdx.x;
@@ -54,23 +54,24 @@ __global__ void generate_mandelbrot(complex *in, int *out, complex z, int i_size
         abs_value = sqrt((z.real * z.real) + (z.imag * z.imag));
         if (abs_value > 2.0) {
             result = 0;
+            *count += 1;
             break;
         }
     }
     out[id_i * i_size + id_r] = result;
 
-    __syncthreads();
-    // calculating number of elements outside of mandelbrot set
-    if (blockIdx.x == 0 && blockIdx.y == 0 && threadIdx.x == 0 && threadIdx.y == 0) {
-        int num_inside = 0;
-        for (int i = 0; i < i_size * i_size; i++) {
-            num_inside += out[i];
-        }
-        float area = 16.0 * (double)(num_inside) / (double)(i_size * i_size);
-        float error = area / (double)i_size;
-        printf("The number of points outside is: %d\n", i_size * i_size - num_inside);
-        printf("Area of Mandlebrot set is: %12.8f +/- %12.8f\n", area, error);
-    }
+    // __syncthreads();
+    // // calculating number of elements outside of mandelbrot set
+    // if (blockIdx.x == 0 && blockIdx.y == 0 && threadIdx.x == 0 && threadIdx.y == 0) {
+    //     int num_inside = 0;
+    //     for (int i = 0; i < i_size * i_size; i++) {
+    //         num_inside += out[i];
+    //     }
+    //     float area = 16.0 * (double)(num_inside) / (double)(i_size * i_size);
+    //     float error = area / (double)i_size;
+    //     printf("The number of points outside is: %d\n", i_size * i_size - num_inside);
+    //     printf("Area of Mandlebrot set is: %12.8f +/- %12.8f\n", area, error);
+    // }
 }
 
 int main(int argc, char** argv) {
@@ -106,17 +107,23 @@ int main(int argc, char** argv) {
 
     // pointers
     complex *h_input;                   // CPU
-    complex *d_input;                   // CPU
-    int *h_output;                      // GPU
+    complex *d_input;                   // GPU
+
+    int *h_output;                      // CPU
     int *d_output;                      // GPU
 
+    int *h_count;                       // CPU
+    int *d_count;                       // GPU
+    
     // allocating space in CPU
     h_input = (complex *) malloc(size_input);
     h_output = (int *) malloc(size_output);
+    h_count = (int *) malloc(sizeof(int));
 
     // allocating space in GPU
     cudaMalloc((void **) &d_input, size_input);
     cudaMalloc((void **) &d_output, size_output);
+    cudaMalloc((void **) &d_count, sizeof(int));
 
 
     // generating input
@@ -129,8 +136,11 @@ int main(int argc, char** argv) {
         }
     }
 
+    *h_count = 0;
+
     // copying from CPU to GPU
     cudaMemcpy(d_input, h_input, size_input, cudaMemcpyHostToDevice);
+    cudaMemcpy(d_count, h_count, sizeof(int), cudaMemcpyHostToDevice);
 
     // executing kernels
     t1 = time(NULL);
@@ -140,7 +150,7 @@ int main(int argc, char** argv) {
     dim3 dimBlock(n_threads, n_threads);
     dim3 dimGrid(n_blocks_r, n_blocks_i);
 
-    generate_mandelbrot<<<dimGrid, dimBlock>>>(d_input, d_output, z, i_points, MAX_ITER);
+    generate_mandelbrot<<<dimGrid, dimBlock>>>(d_input, d_output, d_count, z, i_points, MAX_ITER);
     
     // waiting for threads
     cudaThreadSynchronize();
@@ -152,7 +162,14 @@ int main(int argc, char** argv) {
 
     // copying back to CPU
     cudaMemcpy(h_output, d_output, size_output, cudaMemcpyDeviceToHost);
+    cudaMemcpy(h_count, d_count, sizeof(int), cudaMemcpyDeviceToHost);
     checkCUDAError("memcpy");
+
+    // number of points outside, area and error
+    printf("The number of points outside is: %d\n", h_count);
+    float area = (2.0 * max) * (2.0 * max) * (double)(array_size - h_count) / (double)(array_size);
+    float error = area / (double)r_points;
+    printf("Area of Mandlebrot set is: %12.8f +/- %12.8f\n", area, error);
 
     // generating pmg image
     printf("Generating image...\n");
