@@ -69,8 +69,8 @@ int main(int argc, char *argv[]) {
 
     // inicializando matrices
     for (int i = 0; i < MTX_SIZE; i++) {
-        h_A[i] = (float)rand() % 100;
-        h_B[i] = (float)rand() % 100;
+        h_A[i] = (float)(rand() % 100);
+        h_B[i] = (float)(rand() % 100);
         h_C[i] = (float)0;
     }
 
