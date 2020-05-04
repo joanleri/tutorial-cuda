@@ -155,6 +155,14 @@ int main(int argc, char** argv) {
     cudaMemcpy(h_output, d_output, size_output, cudaMemcpyDeviceToHost);
     checkCUDAError("memcpy");
 
+    // verifying on CPU
+    printf("Verifying result on CPU...\n");
+    int temp = 0;
+    for (int i = 0; i < array_size; i++) {
+        temp += h_output[i];
+    }
+    printf("The number of points outside is: %d\n", array_size - temp);
+
     // generating pmg image
     printf("Generating image...\n");
     FILE *fp;
