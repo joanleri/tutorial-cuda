@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) {
     }
 
     if (atoi(argv[1]) < 5) {
-        printf("Please provide a dimension higher than 5\n");
+        printf("Please provide a dimension higher than 4\n");
         exit(-1);
     }
 
