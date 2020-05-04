@@ -22,7 +22,7 @@ __global__ void matrix_multiplication(float *d_A, float *d_B, float *d_C, int N,
     __shared__ 
     float A[SHMEM_SIZE];
     __shared__ 
-    loat B[SHMEM_SIZE];
+    float B[SHMEM_SIZE];
 
     // indices de hilos y bloques
     int tx = threadIdx.x;
