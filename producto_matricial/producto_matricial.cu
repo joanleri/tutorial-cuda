@@ -53,6 +53,10 @@ int main(int argc, char *argv[]) {
         exit(-1);
     }
 
+    if (atoi(argv[1]) < 5) {
+        printf("Please provide a dimension higher than 5");
+    }
+
     int N = 1 << atoi(argv[1]);                 // filas y renglones
     int MTX_SIZE = N * N;                       // matriz de tamaño
     size_t size = MTX_SIZE * sizeof(float);     // tamaño de matriz en bytes
@@ -104,8 +108,8 @@ int main(int argc, char *argv[]) {
     checkCUDAError("memcpy");
 
     // verificando resultado
-    printf("Verifying result in CPU...\n");
-    verify_result(h_A, h_B, h_C, N);
+    // printf("Verifying result in CPU...\n");
+    // verify_result(h_A, h_B, h_C, N);
     printf("Success!\n");
 
     // Liberar memoria
