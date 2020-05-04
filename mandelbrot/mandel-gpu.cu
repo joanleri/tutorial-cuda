@@ -166,8 +166,8 @@ int main(int argc, char** argv) {
     checkCUDAError("memcpy");
 
     // number of points outside, area and error
-    printf("The number of points outside is: %d\n", h_count);
-    float area = (2.0 * max) * (2.0 * max) * (double)(array_size - h_count) / (double)(array_size);
+    printf("The number of points outside is: %d\n", *h_count);
+    float area = (2.0 * max) * (2.0 * max) * (double)(array_size - *h_count) / (double)(array_size);
     float error = area / (double)r_points;
     printf("Area of Mandlebrot set is: %12.8f +/- %12.8f\n", area, error);
 
