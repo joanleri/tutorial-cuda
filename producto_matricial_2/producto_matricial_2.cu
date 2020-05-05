@@ -30,7 +30,7 @@ __global__ void matrix_multiplication(float *d_A, float *d_B, float *d_C, int N,
     int bx = blockIdx.x;
     int by = blockIdx.y;
 
-    // calculando columna y file
+    // calculando columna y fila
     int row = by * tile_size + ty;
     int col = bx * tile_size + tx;
 
